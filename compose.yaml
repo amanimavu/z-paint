@@ -1,0 +1,17 @@
+services:
+    web:
+        build: .
+        ports:
+            - "8000:8000"
+        develop:
+            watch:
+                - action: sync
+                  path: ./src
+                  target: /z-paint/src
+
+                - action: rebuild
+                  path: package.json
+
+                - action: sync+restart
+                  path: vite.config.ts
+                  target: /z-paint
