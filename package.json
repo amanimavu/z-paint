@@ -13,6 +13,10 @@
         "vite": "^7.1.2"
     },
     "dependencies": {
+        "@tailwindcss/vite": "^4.1.12",
+        "daisyui": "^5.0.50",
+        "konva": "^9.3.22",
+        "tailwindcss": "^4.1.12",
         "tsx-dom": "^3.1.0",
         "tsx-dom-types": "^2.1.0"
     }
