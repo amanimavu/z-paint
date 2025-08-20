@@ -6,12 +6,15 @@ services:
         develop:
             watch:
                 - action: sync
-                  path: ./src
-                  target: /z-paint/src
+                  path: .
+                  target: /z-paint
+                  ignore:
+                      - package.json
+                      - vite.config.ts
 
                 - action: rebuild
                   path: package.json
 
                 - action: sync+restart
-                  path: vite.config.ts
-                  target: /z-paint
+                  path: ./vite.config.ts
+                  target: /z-paint/vite.config.ts
