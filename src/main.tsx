@@ -1,3 +1,6 @@
+import type { Layer } from "konva/lib/Layer";
+import type { Active } from "./utilities/state-management";
+import { Observer } from "./utilities/state-management";
 import "./style.css";
 
 const app = <App />;
@@ -5,8 +8,16 @@ const root = document.getElementById("app");
 root?.appendChild(app);
 const { stage } = await import("./init");
 const { create: createCircle } = await import("./utilities/shapes/circle");
+export const layers: Layer[] = [];
 
-type Active = "shape" | "color" | "undo" | "fill" | "pencil" | "eraser";
+document.addEventListener("load", function () {
+    const shapeBtn = document.getElementById("shapes");
+    if (shapeBtn) {
+        const computedStyles = getComputedStyle(shapeBtn);
+        shapeBtn.style.backgroundColor =
+            computedStyles.getPropertyValue("--color-primary");
+    }
+});
 
 function toggleShapeTools(state: Active) {
     const shapeTools = document.getElementById("shape-configs");
@@ -128,37 +139,13 @@ function toggleFillTools(state: Active) {
     }
 }
 
-class ToolbarPublisher {
-    active: Active = "shape";
-    subscribers = new Set<Function>();
-
-    subscribe(fn: Function) {
-        this.subscribers.add(fn);
-    }
-
-    unsubscribe(fn: Function) {
-        this.subscribers.delete(fn);
-    }
-
-    notify() {
-        this.subscribers.forEach((subscriber) => {
-            subscriber(this.active);
-        });
-    }
-
-    setActive(state: Active) {
-        this.active = state;
-        this.notify();
-    }
-}
-
-const toolbarPublisher = new ToolbarPublisher();
-toolbarPublisher.subscribe(toggleColorTools);
-toolbarPublisher.subscribe(toggleShapeTools);
-toolbarPublisher.subscribe(togglePencilTools);
-toolbarPublisher.subscribe(toggleUndoTools);
-toolbarPublisher.subscribe(toggleEraseTools);
-toolbarPublisher.subscribe(toggleFillTools);
+const toolbarObserver = new Observer();
+toolbarObserver.subscribe(toggleColorTools);
+toolbarObserver.subscribe(toggleShapeTools);
+toolbarObserver.subscribe(togglePencilTools);
+toolbarObserver.subscribe(toggleUndoTools);
+toolbarObserver.subscribe(toggleEraseTools);
+toolbarObserver.subscribe(toggleFillTools);
 
 function Toolbar() {
     return (
@@ -172,7 +159,7 @@ function Toolbar() {
                             <button
                                 id="shapes"
                                 onClick={() =>
-                                    toolbarPublisher.setActive("shape")
+                                    toolbarObserver.setActive("shape")
                                 }
                                 class="btn btn-soft bg-primary"
                             >
@@ -186,7 +173,7 @@ function Toolbar() {
                             <button
                                 id="undo"
                                 onClick={() =>
-                                    toolbarPublisher.setActive("undo")
+                                    toolbarObserver.setActive("undo")
                                 }
                                 class="btn btn-soft"
                             >
@@ -200,7 +187,7 @@ function Toolbar() {
                             <button
                                 id="eraser"
                                 onClick={() =>
-                                    toolbarPublisher.setActive("eraser")
+                                    toolbarObserver.setActive("eraser")
                                 }
                                 class="btn btn-soft"
                             >
@@ -213,7 +200,7 @@ function Toolbar() {
                             <p class="text-xs text-zinc-400">ctrl + a</p>
                             <button
                                 onClick={() =>
-                                    toolbarPublisher.setActive("pencil")
+                                    toolbarObserver.setActive("pencil")
                                 }
                                 id="pencil"
                                 class="btn btn-soft"
@@ -227,7 +214,7 @@ function Toolbar() {
                             <p class="text-xs text-zinc-400">ctrl + p</p>
                             <button
                                 onClick={() =>
-                                    toolbarPublisher.setActive("color")
+                                    toolbarObserver.setActive("color")
                                 }
                                 id="paint"
                                 class="btn btn-soft"
@@ -241,7 +228,7 @@ function Toolbar() {
                             <p class="text-xs text-zinc-400">ctrl + f</p>
                             <button
                                 onClick={() =>
-                                    toolbarPublisher.setActive("fill")
+                                    toolbarObserver.setActive("fill")
                                 }
                                 id="fill"
                                 class="btn btn-soft"
@@ -282,7 +269,7 @@ function ColorTools() {
         <div id="color-configs" class="flex-col mb-4 hidden">
             <h4 class="text-xl font-medium">Colors</h4>
             <div class="flex flex-wrap gap-x-12 gap-y-6 my-2 w-3/4">
-                <button class="cursor-pointer w-9 aspect-square rounded-full bg-red-600 focus:border"></button>
+                <button class="cursor-pointer w-9 aspect-square rounded-full bg-red-600"></button>
                 <button class="cursor-pointer w-9 aspect-square rounded-full bg-red-600"></button>
                 <button class="cursor-pointer w-9 aspect-square rounded-full bg-red-600"></button>
                 <button class="cursor-pointer w-9 aspect-square rounded-full bg-red-600"></button>
@@ -301,7 +288,10 @@ function ShapeTools() {
             <div class="flex flex-wrap gap-x-12 gap-y-6 my-2 w-3/4">
                 <button
                     onClick={() => {
-                        const circleLayer = createCircle();
+                        const circleLayer = createCircle({ layer: layers[0] });
+                        if (layers[0] === undefined) {
+                            layers[0] = circleLayer;
+                        }
                         stage.add(circleLayer);
                     }}
                     class="cursor-pointer text-4xl bi bi-circle"
