@@ -1,15 +1,17 @@
 import Konva from "konva";
 import type { Layer } from "konva/lib/Layer";
 import { stage } from "../../init";
-import { getStageBound } from ".";
+import { getStageBound } from "./index";
+import { selectionRectangle, tr as transformer } from "../select-transform";
 
-export function create(
-    layer?: Layer,
-    width?: number,
-    height?: number,
-    x?: number,
-    y?: number
-) {
+type createProps = {
+    layer?: Layer;
+    width?: number;
+    height?: number;
+    x?: number;
+    y?: number;
+};
+export function create({ layer, width, height, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
     const circle = new Konva.Circle({
         width: width ?? 100,
@@ -17,6 +19,7 @@ export function create(
         x: x ?? stage.width() / 2,
         y: y ?? stage.height() / 2,
         stroke: "white",
+        name: "shape",
         strokeWidth: 2,
         draggable: true,
         dragBoundFunc(pos) {
@@ -24,5 +27,7 @@ export function create(
         },
     });
     layer.add(circle);
+    layer.add(selectionRectangle);
+    layer.add(transformer);
     return layer;
 }
