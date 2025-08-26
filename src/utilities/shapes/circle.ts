@@ -18,7 +18,7 @@ export function create({ layer, width, height, x, y }: createProps) {
         height: height ?? 100,
         x: x ?? stage.width() / 2,
         y: y ?? stage.height() / 2,
-        stroke: "white",
+        stroke: "#ffffff",
         name: "shape",
         strokeWidth: 2,
         draggable: true,
