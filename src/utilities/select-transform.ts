@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { stage } from "../init";
-import type { Shape } from "konva/lib/Shape";
+import type { Shape, ShapeConfig } from "konva/lib/Shape";
+import { displayAttributes } from "./shapes/index";
 
 export const tr = new Konva.Transformer();
 
@@ -98,6 +99,7 @@ stage.on("click tap", function (e) {
         // if no key pressed and the node is not selected
         // select just one
         tr.nodes([e.target]);
+        displayAttributes(e.target as Shape<ShapeConfig>);
     } else if (metaPressed && isSelected) {
         // if we pressed keys and node was selected
         // we need to remove it from selection:
@@ -124,19 +126,18 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keydown", async (e) => {
     const ctrlPressed = e.ctrlKey;
     const gPressed = e.key === "g";
-    
+
     if (ctrlPressed && gPressed) {
         e.preventDefault();
         const group = new Konva.Group({
             draggable: true,
         });
         const { layers } = await import("../main");
-        layers[0].add(group);
         tr.nodes().forEach((node) => {
             if (node.attrs.name === "shape") {
                 group.add(node as Shape);
             }
         });
-        
+        layers[0].add(group);
     }
 });
