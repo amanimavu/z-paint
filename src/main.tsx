@@ -285,7 +285,7 @@ function ShapeTools() {
     return (
         <div id="shape-configs" class="flex-col mb-4 flex">
             <h4 class="text-xl font-medium">Shapes</h4>
-            <div class="flex flex-wrap gap-x-12 gap-y-6 my-2 w-3/4">
+            <div class="flex flex-wrap gap-x-12 gap-y-6 my-2">
                 <button
                     onClick={() => {
                         const circleLayer = createCircle({ layer: layers[0] });
@@ -294,34 +294,102 @@ function ShapeTools() {
                         }
                         stage.add(circleLayer);
                     }}
-                    class="cursor-pointer text-4xl bi bi-circle"
+                    class="cursor-pointer text-2xl bi bi-circle"
                 ></button>
-                <button class="cursor-pointer text-4xl bi bi-triangle"></button>
-                <button class="cursor-pointer text-4xl bi bi-square"></button>
-                <button class="cursor-pointer text-4xl bi bi-pentagon"></button>
-                <button class="cursor-pointer text-4xl bi bi-slash-lg"></button>
-                <button class="cursor-pointer text-4xl bi bi-star"></button>
+                <button class="cursor-pointer text-2xl bi bi-triangle"></button>
+                <button class="cursor-pointer text-2xl bi bi-square"></button>
+                <button class="cursor-pointer text-2xl bi bi-pentagon"></button>
+                <button class="cursor-pointer text-2xl bi bi-slash-lg"></button>
+                <button class="cursor-pointer text-2xl bi bi-star"></button>
             </div>
             <section class="mt-6">
                 <div class="divider my-0"></div>
                 <div>
-                    <h5 class="font-medium">Stroke</h5>
-                    <div class="flex justify-between">
-                        <input type="color" class="h-10 w-25 m-0" />
-                        <label class="input validator w-35 h-8 m-1 rounded-none">
-                            <i class="bi border-none bi-border-width"></i>
-                            <input type="number" class="input" />
+                    <h5 class="font-normal">positions</h5>
+                    <div class="flex justify-between gap-10">
+                        <label class="input input-sm validator w-3/9 my-1 py-1">
+                            <span class="font-bold opacity-40 mr-2">x</span>
+                            <input
+                                name="x-pos"
+                                id="x-pos"
+                                type="number"
+                                class="w-full"
+                                min={0}
+                            />
+                        </label>
+                        <label class="input input-sm validator w-3/9 my-1 py-1">
+                            <span class="font-bold opacity-40 mr-2">y</span>
+                            <input
+                                name="y-pos"
+                                id="y-pos"
+                                type="number"
+                                class="w-full"
+                                min={0}
+                            />
                         </label>
                     </div>
                 </div>
                 <div class="divider my-0"></div>
                 <div>
-                    <h5 class="font-medium">Fill</h5>
-                    <input type="color" class="h-10 w-25 m-0" />
+                    <h5 class="font-normal">dimensions</h5>
+                    <div class="flex justify-between gap-10">
+                        <label class="input input-sm validator w-3/9 my-1 py-1">
+                            <span class="font-bold opacity-40 mr-2">w</span>
+                            <input
+                                name="width"
+                                id="width"
+                                type="number"
+                                class="w-full"
+                                min={0}
+                            />
+                        </label>
+                        <label class="input input-sm validator w-3/9 my-1 py-1">
+                            <span class="font-bold opacity-40 mr-2">h</span>
+                            <input
+                                name="height"
+                                id="height"
+                                type="number"
+                                class="w-full"
+                                min={0}
+                            />
+                        </label>
+                    </div>
                 </div>
                 <div class="divider my-0"></div>
                 <div>
-                    <h5 class="font-medium">Effects</h5>
+                    <h5 class="font-normal">stroke</h5>
+                    <div class="flex justify-between">
+                        <input
+                            type="color"
+                            class="m-0 w-3/9 h-10"
+                            name="stroke-color"
+                            id="stroke-color"
+                        />
+                        <label class="input input-sm validator w-3/9 my-1 py-1">
+                            <i class="bi bi-border-width opacity-40 mr-2"></i>
+                            <input
+                                name="stroke-width"
+                                id="stroke-width"
+                                type="number"
+                                class="w-full"
+                                min={0}
+                            />
+                        </label>
+                    </div>
+                </div>
+                <div class="divider my-0"></div>
+                <div>
+                    <h5 class="font-normal">fill</h5>
+                    <input
+                        type="color"
+                        name="fill"
+                        id="fill"
+                        class="h-10 w-3/9"
+                    />
+                </div>
+                <div class="divider my-0"></div>
+                <div>
+                    <h5 class="font-normal">effects</h5>
                 </div>
                 <div class="divider my-0"></div>
             </section>
