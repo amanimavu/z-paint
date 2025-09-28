@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+input[type="color"] {
+    height: calc(0.3rem * 8);
+    margin-top: -2px;
+}
+
+.pickr{
+    flex-grow: 1;
+}
+
+.pickr > button {
+    width: 100% !important;
+}
+
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -26,5 +39,35 @@
     }
     button {
         background-color: #f9f9f9;
+    }
+}
+
+label .bi-plus {
+    animation: fade-in-rotation 150ms ease-in;
+}
+
+label .bi-dash {
+    animation: fade-out-rotation 150ms ease-in;
+}
+
+@keyframes fade-in-rotation {
+    0% {
+        opacity: 0;
+        transform: rotate(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes fade-out-rotation {
+    0% {
+        opacity: 0;
+        transform: rotate(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(-45deg);
     }
 }
