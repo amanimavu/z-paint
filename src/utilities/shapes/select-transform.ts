@@ -1,7 +1,13 @@
 import Konva from "konva";
-import { stage } from "../init";
+import { stage } from "../../init";
 import type { Shape, ShapeConfig } from "konva/lib/Shape";
-import { displayAttributes } from "./shapes/index";
+import {
+    displayAttributes,
+    shapeConfigInputs,
+    shapeConfigInputsObserver,
+} from "./index";
+import { store } from "../state-management";
+import { pickerInit } from "../color-picker";
 
 export const tr = new Konva.Transformer();
 
@@ -66,8 +72,17 @@ stage.on("mouseup touchend", () => {
     var selected = shapes.filter((shape) =>
         Konva.Util.haveIntersection(box, shape.getClientRect())
     );
+
     tr.nodes(selected);
+    if (selected.length === 1) {
+        displayAttributes(selected[0] as Shape<ShapeConfig>);
+        if (shapeConfigMenu) {
+            shapeConfigMenu.classList.replace("invisible", "visible");
+        }
+    }
 });
+
+const shapeConfigMenu = document.getElementById("shape-config-menu");
 
 // clicks should select/deselect shapes
 stage.on("click tap", function (e) {
@@ -83,6 +98,15 @@ stage.on("click tap", function (e) {
     // if click on empty area - remove all selections
     if (e.target === stage) {
         tr.nodes([]);
+        if (shapeConfigMenu) {
+            const effectEntries = document.querySelectorAll(
+                "div:has(+#add-effect) > div"
+            );
+            effectEntries.forEach((entry) => {
+                entry.remove();
+            });
+            shapeConfigMenu.classList.replace("visible", "invisible");
+        }
         return;
     }
 
@@ -99,6 +123,23 @@ stage.on("click tap", function (e) {
         // if no key pressed and the node is not selected
         // select just one
         tr.nodes([e.target]);
+        store.selectedShape = e.target as Shape;
+        if (shapeConfigMenu) {
+            shapeConfigMenu.classList.replace("invisible", "visible");
+        }
+        const strokeColorPicker = pickerInit(
+            "#stroke-color > div",
+            store.selectedShape.stroke() as string
+        );
+        const fillColorPicker = pickerInit(
+            "#fill > div",
+            store.selectedShape.fill() as string
+        );
+        if (shapeConfigInputs) {
+            shapeConfigInputs.stroke.color = strokeColorPicker;
+            shapeConfigInputs.fill.color = fillColorPicker;
+            shapeConfigInputsObserver.notify();
+        }
         displayAttributes(e.target as Shape<ShapeConfig>);
     } else if (metaPressed && isSelected) {
         // if we pressed keys and node was selected
@@ -111,33 +152,5 @@ stage.on("click tap", function (e) {
         // add the node into selection
         const nodes = tr.nodes().concat([e.target]);
         tr.nodes(nodes);
-    }
-});
-
-window.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "delete") {
-        tr.nodes().forEach((node) => {
-            node.destroy();
-        });
-        tr.nodes([]);
-    }
-});
-
-window.addEventListener("keydown", async (e) => {
-    const ctrlPressed = e.ctrlKey;
-    const gPressed = e.key === "g";
-
-    if (ctrlPressed && gPressed) {
-        e.preventDefault();
-        const group = new Konva.Group({
-            draggable: true,
-        });
-        const { layers } = await import("../main");
-        tr.nodes().forEach((node) => {
-            if (node.attrs.name === "shape") {
-                group.add(node as Shape);
-            }
-        });
-        layers[0].add(group);
     }
 });
