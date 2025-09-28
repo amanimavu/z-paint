@@ -10,7 +10,8 @@
 
         "baseUrl": "src",
         "paths": {
-            "shapes/*": ["./utilities/shapes/*"]
+            "shapes/*": ["./utilities/shapes/*"],
+            "utilities/*": ["./utilities/*"],
         },
 
         /* Bundler mode */

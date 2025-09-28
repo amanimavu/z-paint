@@ -1,6 +1,14 @@
+import type Pickr from "@simonwep/pickr";
+import type { Layer } from "konva/lib/Layer";
+import type { Shape } from "konva/lib/Shape";
+
 export type Active = "shape" | "color" | "undo" | "fill" | "pencil" | "eraser";
-export class Observer {
-    active: Active = "shape";
+export class Observer<State> {
+    state: State;
+
+    constructor(state:State) {
+        this.state = state
+    }
     subscribers = new Set<Function>();
 
     subscribe(fn: Function) {
@@ -13,12 +21,21 @@ export class Observer {
 
     notify() {
         this.subscribers.forEach((subscriber) => {
-            subscriber(this.active);
+            subscriber(this.state);
         });
     }
 
-    setActive(state: Active) {
-        this.active = state;
+    setActive(state: State) {
+        this.state = state;
         this.notify();
     }
 }
+
+type Store = {
+    layers: Layer[];
+    selectedShape: null | Shape & { picker?: Pickr, dummy?:number };
+};
+export const store: Store = {
+    layers: [],
+    selectedShape: null
+};

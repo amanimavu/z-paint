@@ -13,8 +13,8 @@ type createProps = {
 };
 export function create({ layer, width, height, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
-    const circle = new Konva.Circle({
-        width: width ?? 100,
+    const rectangle = new Konva.Rect({
+        width: width ?? 200,
         height: height ?? 100,
         x: x ?? stage.width() / 2,
         y: y ?? stage.height() / 2,
@@ -28,12 +28,12 @@ export function create({ layer, width, height, x, y }: createProps) {
         },
     });
 
-    layer.add(circle);
+    layer.add(rectangle);
     layer.add(selectionRectangle);
     layer.add(transformer);
 
-    circle.on("transform", function(){
-        displayAttributes(this)
+    rectangle.on("transform", function () {
+        displayAttributes(this);
     });
     return layer;
 }
