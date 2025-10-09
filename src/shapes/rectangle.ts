@@ -1,8 +1,8 @@
 import Konva from "konva";
 import type { Layer } from "konva/lib/Layer";
-import { stage } from "../../init";
-import { displayAttributes, getStageBound } from "./index";
-import { selectionRectangle, tr as transformer } from "./select-transform";
+import { store } from "../store";
+import { getStageBound } from "@/lib/stage";
+import { updateShapeConfigUI } from "@/ui/toolbar/tools/shape";
 
 type createProps = {
     layer?: Layer;
@@ -13,11 +13,11 @@ type createProps = {
 };
 export function create({ layer, width, height, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
-    const circle = new Konva.Circle({
-        width: width ?? 100,
+    const rectangle = new Konva.Rect({
+        width: width ?? 200,
         height: height ?? 100,
-        x: x ?? stage.width() / 2,
-        y: y ?? stage.height() / 2,
+        x: x ?? store?.stage?.width() ?? 0 / 2,
+        y: y ?? store?.stage?.height() ?? 0 / 2,
         stroke: "#ffffff",
         fill: "#E0E0E0",
         name: "shape",
@@ -28,12 +28,12 @@ export function create({ layer, width, height, x, y }: createProps) {
         },
     });
 
-    layer.add(circle);
-    layer.add(selectionRectangle);
-    layer.add(transformer);
+    layer.add(rectangle);
+    store.selectionRectangle && layer.add(store.selectionRectangle);
+    store.transformer && layer.add(store.transformer);
 
-    circle.on("transform", function(){
-        displayAttributes(this)
+    rectangle.on("transform", function () {
+        updateShapeConfigUI(this);
     });
     return layer;
 }

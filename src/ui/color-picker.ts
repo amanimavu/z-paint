@@ -1,7 +1,8 @@
 import "@simonwep/pickr/dist/themes/monolith.min.css"; // 'monolith' theme
 
 import Pickr from "@simonwep/pickr";
-import { Observer, store } from "./state-management";
+import { Observer } from "../lib/state-management";
+import { store } from "@/store/index";
 
 export const pickerInit = (querySelector?: string, defaultColor?: string) => {
     return Pickr.create({
@@ -34,7 +35,7 @@ export const storeObserver = new Observer<typeof store>(store);
 const pickerProvided = (state: typeof store) => {
     if (state.selectedShape?.picker) {
         store.selectedShape?.picker?.on("save", (color: Pickr.HSVaColor) => {
-            console.log(color)
+            console.log(color);
             if (store.selectedShape?.shadowColor) {
                 store.selectedShape.shadowColor(color.toRGBA().toString());
             }

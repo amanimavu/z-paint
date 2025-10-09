@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
     server: {
@@ -10,7 +11,5 @@ export default defineConfig({
             interval: 1000,
         },
     },
-    plugins: [
-        tailwindcss()
-    ]
+    plugins: [tailwindcss(), tsconfigPaths()],
 });

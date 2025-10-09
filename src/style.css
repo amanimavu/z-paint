@@ -1,12 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@layer components {
+    .scrollbar-thin {
+        scrollbar-width: thin;
+    }
+}
 
 input[type="color"] {
     height: calc(0.3rem * 8);
     margin-top: -2px;
 }
 
-.pickr{
+.pickr {
     flex-grow: 1;
 }
 
