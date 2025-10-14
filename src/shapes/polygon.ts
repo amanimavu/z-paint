@@ -7,16 +7,17 @@ import { bindToDragEvents } from "@/app/events";
 
 type createProps = {
     layer?: Layer;
-    width?: number;
-    height?: number;
+    sides?: number;
+    radius?: number;
     x?: number;
     y?: number;
 };
-export function create({ layer, width, height, x, y }: createProps) {
+
+export function create({ layer, sides, radius, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
-    const rectangle = new Konva.Rect({
-        width: width ?? 200,
-        height: height ?? 100,
+    const polygon = new Konva.RegularPolygon({
+        radius: radius ?? 100,
+        sides: sides ?? 4,
         x: x ?? (store.stage?.width() ?? 0) / 2,
         y: y ?? (store.stage?.height() ?? 0) / 2,
         stroke: "#ffffff",
@@ -28,14 +29,15 @@ export function create({ layer, width, height, x, y }: createProps) {
             return getStageBound(pos.x, pos.y);
         },
     });
+    console.log(polygon.getClassName());
 
-    layer.add(rectangle);
+    layer.add(polygon);
     store.selectionRectangle && layer.add(store.selectionRectangle);
     store.transformer && layer.add(store.transformer);
-    bindToDragEvents(rectangle);
+    bindToDragEvents(polygon);
 
-    rectangle.on("transform", function () {
-        updateShapeConfigUI(this, ["height", "width"]);
+    polygon.on("transform", function () {
+        updateShapeConfigUI(this, ["radius", "sides"]);
     });
     return layer;
 }

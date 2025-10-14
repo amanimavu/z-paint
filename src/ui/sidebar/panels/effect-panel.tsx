@@ -34,8 +34,10 @@ export function EffectEntry({ id }: Props): Element {
                                             const shadowColor =
                                                 store.selectedShape.shadowColor() ??
                                                 "black";
-                                            console.log(shadowColor);
                                             store.selectedShape.picker = picker;
+                                            store.selectedShape.shadowColor(
+                                                shadowColor
+                                            );
                                             store.selectedShape?.picker?.setColor(
                                                 shadowColor
                                             );

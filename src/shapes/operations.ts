@@ -10,7 +10,7 @@ export function deleteShape() {
     store.transformer?.nodes([]);
     const shapeConfigMenu = document.getElementById("shape-config-menu");
 
-    shapeConfigMenu?.classList.replace("visible", "invisible");
+    shapeConfigMenu?.classList.replace("block", "hidden");
 }
 
 export function group() {

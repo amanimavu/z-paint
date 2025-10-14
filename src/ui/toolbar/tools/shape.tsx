@@ -2,7 +2,12 @@ import { store } from "@/store/index";
 import type { Shape } from "konva/lib/Shape";
 import type { ShapeConfigRefs } from "types";
 import { create as createCircle } from "@/shapes/circle";
+import { create as createRectangle } from "@/shapes/rectangle";
+import { create as createPolygon } from "@/shapes/polygon";
+import { create as createStar } from "@/shapes/star";
 import { PropertyPanel } from "@/ui/sidebar/panels/property-panel";
+import { pickerInit } from "@/ui/color-picker";
+import { bindShapeConfigRefs } from "@/app/events";
 
 export let shapeConfigRefs: ShapeConfigRefs = null;
 
@@ -22,12 +27,39 @@ export function initializeShapeConfigRefs() {
                 color: null,
                 exists: shapeConfigMenu?.querySelector("#fill-toggle"),
             },
+            radius: shapeConfigMenu?.querySelector("#radius"),
+            innerRadius: shapeConfigMenu?.querySelector("#inner-radius"),
+            sides: shapeConfigMenu?.querySelector("#sides"),
+            vertices: shapeConfigMenu?.querySelector("#vertices"),
         };
     }
     return shapeConfigRefs;
 }
 
-export function updateShapeConfigUI(shape: Shape) {
+type targetOptions =
+    | "x"
+    | "y"
+    | "width"
+    | "height"
+    | "stroke"
+    | "fill"
+    | "sides"
+    | "radius"
+    | "innerRadius"
+    | "vertices";
+export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
+    targets = targets ?? [
+        "x",
+        "y",
+        "width",
+        "height",
+        "stroke",
+        "fill",
+        "radius",
+        "sides",
+        "innerRadius",
+        "vertices",
+    ];
     const attributes = shape.attrs;
     const [
         strokeWidth,
@@ -37,31 +69,88 @@ export function updateShapeConfigUI(shape: Shape) {
         shadowOpacity,
         shadowEnabled,
         opacity,
+        x,
+        y,
+        width,
+        height,
+        radius,
+        innerRadius,
+        outerRadius,
+        sides,
+        scaleX = 1,
+        scaleY = 1,
+        vertices,
     ] = [
         attributes.strokeWidth ?? null,
-        attributes.shadowBlur ?? null,
-        attributes.shadowOffsetX ?? null,
-        attributes.shadowOffsetY ?? null,
-        attributes.shadowOpacity ?? null,
+        attributes.shadowBlur ?? 0,
+        attributes.shadowOffsetX ?? 0,
+        attributes.shadowOffsetY ?? 0,
+        attributes.shadowOpacity ?? 1,
         attributes.shadowEnabled,
         attributes.opacity ?? null,
+        attributes.x ?? null,
+        attributes.y ?? null,
+        attributes.width ?? null,
+        attributes.height ?? null,
+        attributes.radius ?? null,
+        attributes.innerRadius ?? null,
+        attributes.outerRadius ?? null,
+        attributes.sides ?? null,
+        attributes.scaleX,
+        attributes.scaleY,
+        attributes.numPoints ?? null,
     ];
-    const { x, y, width, height } = shape.getClientRect();
 
-    if (shapeConfigRefs?.x) {
-        shapeConfigRefs.x.value = `${x}`;
+    if (shapeConfigRefs?.x && targets?.includes("x") && x) {
+        shapeConfigRefs.x.value = `${parseInt(x)}`;
     }
-    if (shapeConfigRefs?.y) {
-        shapeConfigRefs.y.value = `${y}`;
+    if (shapeConfigRefs?.y && targets?.includes("y") && y) {
+        shapeConfigRefs.y.value = `${parseInt(y)}`;
     }
-    if (shapeConfigRefs?.width) {
-        shapeConfigRefs.width.value = `${width}`;
+    if (shapeConfigRefs?.width && targets?.includes("width")) {
+        if (radius) {
+            shapeConfigRefs.width.value = `${parseInt(`${radius * scaleX}`)}`;
+        } else {
+            shapeConfigRefs.width.value = `${parseInt(`${width * scaleX}`)}`;
+        }
     }
-    if (shapeConfigRefs?.height) {
-        shapeConfigRefs.height.value = `${height}`;
+    if (shapeConfigRefs?.height && targets?.includes("height")) {
+        if (radius) {
+            shapeConfigRefs.height.value = `${parseInt(`${radius * scaleY}`)}`;
+        } else {
+            shapeConfigRefs.height.value = `${parseInt(`${height * scaleY}`)}`;
+        }
     }
 
-    if (shapeConfigRefs?.stroke.width) {
+    if (shapeConfigRefs?.sides && targets.includes("sides") && sides) {
+        shapeConfigRefs.sides.value = `${parseInt(`${sides}`)}`;
+    }
+
+    if (
+        shapeConfigRefs?.radius &&
+        targets.includes("radius") &&
+        (radius || outerRadius)
+    ) {
+        if (outerRadius) {
+            shapeConfigRefs.radius.value = `${parseInt(`${outerRadius}`)}`;
+        } else {
+            shapeConfigRefs.radius.value = `${parseInt(`${radius}`)}`;
+        }
+    }
+
+    if (
+        shapeConfigRefs?.innerRadius &&
+        targets.includes("innerRadius") &&
+        innerRadius
+    ) {
+        shapeConfigRefs.innerRadius.value = `${parseInt(`${innerRadius}`)}`;
+    }
+
+    if (shapeConfigRefs?.vertices && targets.includes("vertices") && vertices) {
+        shapeConfigRefs.vertices.value = `${parseInt(`${vertices}`)}`;
+    }
+
+    if (shapeConfigRefs?.stroke.width && targets?.includes("stroke")) {
         shapeConfigRefs.stroke.width.value = `${strokeWidth}`;
     }
 
@@ -109,6 +198,7 @@ export function updateShapeConfigUI(shape: Shape) {
                             queryFactory("shadow-opacity")
                         );
                     if (shadowOpacityInput) {
+                        console.log(shadowOpacity);
                         shadowOpacityInput.value = shadowOpacity;
                     }
 
@@ -139,6 +229,25 @@ export function updateShapeConfigUI(shape: Shape) {
             });
         }
     }
+
+    if (shapeConfigRefs && targets?.includes("stroke")) {
+        const strokeColorPicker = pickerInit(
+            "#stroke-color > div",
+            shape.stroke() as string
+        );
+        shapeConfigRefs.stroke.color = strokeColorPicker;
+    }
+
+    if (shapeConfigRefs && targets?.includes("stroke")) {
+        const fillColorPicker = pickerInit(
+            "#fill > div",
+            shape.fill() as string
+        );
+
+        shapeConfigRefs.fill.color = fillColorPicker;
+    }
+
+    bindShapeConfigRefs(shapeConfigRefs);
 }
 
 export function ShapeTools() {
@@ -148,13 +257,13 @@ export function ShapeTools() {
             <div class="flex flex-wrap gap-x-12 gap-y-6 my-2">
                 <button
                     onClick={() => {
-                        const circleLayer = createCircle({
+                        const layer = createCircle({
                             layer: store.layers[0],
                         });
                         if (store.layers[0] === undefined) {
-                            store.layers[0] = circleLayer;
+                            store.layers[0] = layer;
+                            store.stage?.add(layer);
                         }
-                        store.stage?.add(circleLayer);
                     }}
                     style={{ fontSize: "36px" }}
                     class="cursor-pointer material-symbols-outlined"
@@ -165,13 +274,13 @@ export function ShapeTools() {
                     style={{ fontSize: "36px" }}
                     class="cursor-pointer material-symbols-outlined"
                     onClick={() => {
-                        // const circleLayer = createRectangle({
-                        //     layer: store.layers[0],
-                        // });
-                        // if (store.layers[0] === undefined) {
-                        //     store.layers[0] = circleLayer;
-                        // }
-                        // stage.add(circleLayer);
+                        const layer = createRectangle({
+                            layer: store.layers[0],
+                        });
+                        if (store.layers[0] === undefined) {
+                            store.layers[0] = layer;
+                            store.stage?.add(layer);
+                        }
                     }}
                 >
                     rectangle
@@ -180,27 +289,17 @@ export function ShapeTools() {
                     style={{ fontSize: "36px" }}
                     class="cursor-pointer material-symbols-outlined"
                     onClick={() => {
-                        const modal = document.getElementById(
-                            "my_modal_1"
-                        ) as HTMLDialogElement | null;
-                        modal?.showModal();
+                        const layer = createPolygon({
+                            layer: store.layers[0],
+                        });
+                        if (store.layers[0] === undefined) {
+                            store.layers[0] = layer;
+                            store.stage?.add(layer);
+                        }
                     }}
                 >
                     pentagon
                 </button>
-                <dialog id="my_modal_1" class="modal">
-                    <div class="modal-box">
-                        <h3 class="text-lg font-bold">Polygon</h3>
-                        <p class="py-4">
-                            Press ESC key or click the button below to close
-                        </p>
-                        <div class="modal-action">
-                            <form method="dialog">
-                                <button class="btn">Close</button>
-                            </form>
-                        </div>
-                    </div>
-                </dialog>
                 <button
                     style={{ fontSize: "36px" }}
                     class="cursor-pointer material-symbols-outlined"
@@ -210,6 +309,15 @@ export function ShapeTools() {
                 <button
                     style={{ fontSize: "36px" }}
                     class="cursor-pointer material-symbols-outlined"
+                    onClick={() => {
+                        const layer = createStar({
+                            layer: store.layers[0],
+                        });
+                        if (store.layers[0] === undefined) {
+                            store.layers[0] = layer;
+                            store.stage?.add(layer);
+                        }
+                    }}
                 >
                     star
                 </button>

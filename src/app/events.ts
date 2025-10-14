@@ -12,7 +12,6 @@ import {
 } from "tools/select";
 import { store } from "@/store/index";
 import { EffectEntry } from "@/ui/sidebar/panels/effect-panel";
-import { pickerInit } from "@/ui/color-picker";
 import {
     initializeShapeConfigRefs,
     shapeConfigRefs,
@@ -24,6 +23,9 @@ import {
     transformProvider,
 } from "@/app/providers";
 import type Pickr from "@simonwep/pickr";
+import type { Circle } from "konva/lib/shapes/Circle";
+import type { RegularPolygon } from "konva/lib/shapes/RegularPolygon";
+import type { Star } from "konva/lib/shapes/Star";
 
 document.addEventListener("load", function () {
     const shapeBtn = document.getElementById("shapes");
@@ -126,23 +128,7 @@ export function bindStageEvents(stage: Konva.Stage) {
                 const callback = () => {
                     store.selectedShape = e.target as Shape;
                     if (shapeConfigMenu) {
-                        shapeConfigMenu.classList.replace(
-                            "invisible",
-                            "visible"
-                        );
-                    }
-                    const strokeColorPicker = pickerInit(
-                        "#stroke-color > div",
-                        store.selectedShape.stroke() as string
-                    );
-                    const fillColorPicker = pickerInit(
-                        "#fill > div",
-                        store.selectedShape.fill() as string
-                    );
-                    if (shapeConfigRefs) {
-                        shapeConfigRefs.stroke.color = strokeColorPicker;
-                        shapeConfigRefs.fill.color = fillColorPicker;
-                        bindShapeConfigRefs(shapeConfigRefs);
+                        shapeConfigMenu.classList.replace("hidden", "block");
                     }
                     updateShapeConfigUI(e.target as Shape);
                 };
@@ -159,6 +145,12 @@ export function bindStageEvents(stage: Konva.Stage) {
     );
 }
 
+export function bindToDragEvents(shape: Shape) {
+    shape.on("dragmove", () => {
+        updateShapeConfigUI(shape, ["x", "y"]);
+    });
+}
+
 export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     refs?.x?.addEventListener("change", function () {
         if (store.selectedShape) {
@@ -168,32 +160,58 @@ export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     });
 
     refs?.y?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.y(parseInt(this.value));
-        }
+        store.selectedShape?.y(parseInt(this.value));
+    });
+
+    refs?.sides?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "RegularPolygon")
+            (store.selectedShape as RegularPolygon)?.sides(
+                parseInt(this.value)
+            );
+    });
+
+    refs?.radius?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "RegularPolygon")
+            (store.selectedShape as RegularPolygon)?.radius(
+                parseInt(this.value)
+            );
+        if (store.selectedShape?.getClassName() === "Star")
+            (store.selectedShape as Star)?.outerRadius(parseInt(this.value));
+    });
+
+    refs?.innerRadius?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "Star")
+            (store.selectedShape as Star)?.innerRadius(parseInt(this.value));
+    });
+
+    refs?.vertices?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "Star")
+            (store.selectedShape as Star)?.numPoints(parseInt(this.value));
     });
 
     refs?.width?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.width(parseInt(this.value));
-        }
-        if (store.selectedShape?.getClassName().toLowerCase() === "circle") {
-            const height = store.selectedShape.height().toString();
+        if (store.selectedShape?.getClassName() === "Circle") {
+            const radius = this.value;
+            (store.selectedShape as Circle).radius(parseInt(radius));
             if (refs?.height) {
-                refs.height.value = height;
+                refs.height.value = radius;
             }
+        } else {
+            store.selectedShape &&
+                store.selectedShape.width(parseInt(this.value));
         }
     });
 
     refs?.height?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.height(parseInt(this.value));
-        }
-        if (store.selectedShape?.getClassName().toLowerCase() === "circle") {
-            const width = store.selectedShape.width().toString();
+        if (store.selectedShape?.getClassName() === "Circle") {
+            const radius = this.value;
+            (store.selectedShape as Circle).radius(parseInt(radius));
             if (refs?.width) {
-                refs.width.value = width;
+                refs.width.value = radius;
             }
+        } else {
+            store.selectedShape &&
+                store.selectedShape.height(parseInt(this.value));
         }
     });
     refs?.stroke.width?.addEventListener("change", function () {
@@ -204,11 +222,13 @@ export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
 
     refs?.fill?.exists?.addEventListener("change", function () {
         if (store.selectedShape) {
-            store.selectedShape.fill(
-                this.checked
-                    ? refs?.fill.color?.getColor().toRGBA().toString()
-                    : undefined
-            );
+            if (this.checked) {
+                store.selectedShape.fillEnabled(true);
+                const color = refs?.fill.color?.getColor().toRGBA().toString(); // as string value e.g '#fff'
+                store.selectedShape.fill(color);
+            } else {
+                store.selectedShape.fillEnabled(false);
+            }
         }
 
         document

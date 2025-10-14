@@ -7,16 +7,26 @@ import { bindToDragEvents } from "@/app/events";
 
 type createProps = {
     layer?: Layer;
-    width?: number;
-    height?: number;
+    vertices?: number;
+    radius?: number;
     x?: number;
     y?: number;
+    innerRadius?: number;
 };
-export function create({ layer, width, height, x, y }: createProps) {
+
+export function create({
+    layer,
+    vertices,
+    radius,
+    innerRadius,
+    x,
+    y,
+}: createProps) {
     layer = layer ?? new Konva.Layer();
-    const rectangle = new Konva.Rect({
-        width: width ?? 200,
-        height: height ?? 100,
+    const star = new Konva.Star({
+        outerRadius: radius ?? 100,
+        innerRadius: innerRadius ?? 50,
+        numPoints: vertices ?? 5,
         x: x ?? (store.stage?.width() ?? 0) / 2,
         y: y ?? (store.stage?.height() ?? 0) / 2,
         stroke: "#ffffff",
@@ -29,13 +39,13 @@ export function create({ layer, width, height, x, y }: createProps) {
         },
     });
 
-    layer.add(rectangle);
+    layer.add(star);
     store.selectionRectangle && layer.add(store.selectionRectangle);
     store.transformer && layer.add(store.transformer);
-    bindToDragEvents(rectangle);
+    bindToDragEvents(star);
 
-    rectangle.on("transform", function () {
-        updateShapeConfigUI(this, ["height", "width"]);
+    star.on("transform", function () {
+        updateShapeConfigUI(this, ["radius", "vertices", "innerRadius"]);
     });
     return layer;
 }

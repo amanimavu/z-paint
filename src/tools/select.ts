@@ -44,7 +44,7 @@ export function moveSelection(stage: Konva.Stage) {
 }
 
 export function endSelection(stage: Konva.Stage) {
-    const shapeConfigMenu = document.getElementById("shape-configs");
+    const shapeConfigMenu = document.getElementById("shape-config-menu");
     const shapes = stage.find(".shape");
     const box = store.selectionRectangle?.getClientRect();
     const selected = shapes.filter((shape) => {
@@ -55,10 +55,11 @@ export function endSelection(stage: Konva.Stage) {
     });
 
     store.transformer?.nodes(selected);
+    console.log(selected);
     if (selected.length === 1) {
         updateShapeConfigUI(selected[0] as Shape);
         if (shapeConfigMenu) {
-            shapeConfigMenu.classList.replace("invisible", "visible");
+            shapeConfigMenu.classList.replace("hidden", "block");
         }
     }
 }
@@ -66,7 +67,6 @@ export function endSelection(stage: Konva.Stage) {
 export function deselect() {
     const shapeConfigMenu = document.getElementById("shape-config-menu");
     store.transformer?.nodes([]);
-    console.log(shapeConfigMenu);
 
     if (shapeConfigMenu) {
         const effectEntries = document.querySelectorAll(
@@ -75,7 +75,7 @@ export function deselect() {
         effectEntries.forEach((entry) => {
             entry.remove();
         });
-        shapeConfigMenu.classList.replace("visible", "invisible");
+        shapeConfigMenu.classList.replace("block", "hidden");
     }
 }
 
