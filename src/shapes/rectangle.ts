@@ -17,8 +17,12 @@ export function create({ layer, width, height, x, y }: createProps) {
     const rectangle = new Konva.Rect({
         width: width ?? 200,
         height: height ?? 100,
-        x: x ?? (store.stage?.width() ?? 0) / 2,
-        y: y ?? (store.stage?.height() ?? 0) / 2,
+        x:
+            x ??
+            ((store.stage?.width() ?? 0) - (width ?? 200)) / 2,
+        y:
+            y ??
+            ((store.stage?.height() ?? 0) - (height ?? 100)) / 2,
         stroke: "#ffffff",
         fill: "#E0E0E0",
         name: "shape",
