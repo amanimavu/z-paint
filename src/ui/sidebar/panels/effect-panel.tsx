@@ -3,18 +3,25 @@ import { pickerInit } from "@/ui/color-picker";
 
 type Props = { id: string };
 /**
- * Render an EffectEntry UI block that provides controls to add and edit shadow or opacity effects for the selected shape.
+ * Render an EffectEntry UI block that provides controls to add and edit
+ * shadow or opacity effects for the selected shape.
  *
- * The rendered element contains controls (effect selector, shadow controls, opacity slider, color picker, remove button)
- * that update and read from the central store's `selectedShape`. Interactions may:
- * - enable/disable shadow and update shadow properties (opacity, blur, offsetX, offsetY, color) on `store.selectedShape`
- * - initialize and assign a color picker to `store.selectedShape` and call `storeObserver.notify()`
+ * The rendered element contains controls (effect selector, shadow controls,
+ * opacity slider, color picker, remove button) that update and read from the
+ * central store's `selectedShape`. Interactions may:
+ * - enable/disable shadow and update shadow properties
+ * (opacity, blur, offsetX, offsetY, color) on `store.selectedShape`
+ * - initialize and assign a color picker to `store.selectedShape` and
+ * call `storeObserver.notify()`
  * - update the shape's `opacity`
- * - remove the entry from the DOM and reset any active effect state on `store.selectedShape` (e.g., disable shadow or reset opacity)
+ * - remove the entry from the DOM and reset any active effect state
+ * on `store.selectedShape` (e.g., disable shadow or reset opacity)
  * - re-enable the global "add-effect" button when the entry is removed
  *
- * @param id - The id attribute for the top-level container element (used for scoped DOM queries and color picker initialization)
- * @returns The top-level DOM element for the effect entry configured with event handlers and controls
+ * @param id - The id attribute for the top-level container element
+ * (used for scoped DOM queries and color picker initialization)
+ * @returns The top-level DOM element for the effect entry configured
+ * with event handlers and controls
  */
 export function EffectEntry({ id }: Props): Element {
     return (

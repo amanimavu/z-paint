@@ -16,15 +16,20 @@ type createProps = {
 /**
  * Create and add a Konva regular polygon to a layer.
  *
- * Creates a Konva.RegularPolygon with configurable `sides`, `radius`, and position, adds it to the provided
- * or a newly created layer, wires up drag and transform behavior, and attaches any existing selection overlays.
+ * Creates a Konva.RegularPolygon with configurable `sides`, `radius`,
+ * and position, adds it to the provided or a newly created layer, wires
+ * up drag and transform behavior, and attaches any existing selection overlays.
  *
- * @param layer - Optional Konva.Layer to add the polygon to; a new layer is created when omitted.
+ * @param layer - Optional Konva.Layer to add the polygon to; a new layer is
+ * created when omitted.
  * @param sides - Number of polygon sides; defaults to 4.
  * @param radius - Polygon radius in pixels; defaults to 100.
- * @param x - Initial x position; defaults to the horizontal center of `store.stage` or 0 if unavailable.
- * @param y - Initial y position; defaults to the vertical center of `store.stage` or 0 if unavailable.
- * @returns The Konva.Layer containing the created polygon (and any attached selection rectangle or transformer).
+ * @param x - Initial x position; defaults to the horizontal center of `store.stage`
+ * or 0 if unavailable.
+ * @param y - Initial y position; defaults to the vertical center of `store.stage`
+ * or 0 if unavailable.
+ * @returns The Konva.Layer containing the created polygon
+ * (and any attached selection rectangle or transformer).
  */
 export function create({ layer, sides, radius, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();

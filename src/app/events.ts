@@ -60,10 +60,12 @@ window.addEventListener("keydown", function (e) {
 /**
  * Attach interactive selection and click handlers to a Konva stage.
  *
- * Binds pointer and mouse events to start, update, and finalize a rectangular selection, and handles click/tap selection
- * semantics for shapes (single select, multi-select with Shift/Ctrl/Meta, and deselect on empty-stage clicks). When a single
- * shape is selected it updates the selected shape in the central store, reveals the shape configuration menu, and updates
- * the shape configuration UI.
+ * Binds pointer and mouse events to start, update, and finalize a rectangular
+ * selection, and handles click/tap selection semantics for shapes
+ * (single select, multi-select with Shift/Ctrl/Meta, and deselect on empty-stage clicks).
+ *
+ * When a single shape is selected it updates the selected shape in the central
+ * store, reveals the shape configuration menu, and updates the shape configuration UI.
  *
  * @param stage - The Konva Stage instance to bind events to
  */
@@ -158,7 +160,8 @@ export function bindStageEvents(stage: Konva.Stage) {
 /**
  * Attach a handler that updates the shape configuration UI while the shape is dragged.
  *
- * @param shape - The Konva shape whose `x` and `y` fields in the shape configuration UI should be refreshed during drag movements
+ * @param shape - The Konva shape whose `x` and `y` fields in the shape configuration UI
+ * should be refreshed during drag movements
  */
 export function bindToDragEvents(shape: Shape) {
     let ticking = false;
@@ -173,11 +176,13 @@ export function bindToDragEvents(shape: Shape) {
 }
 
 /**
- * Attach UI control listeners to shape configuration inputs so changes update the currently selected Konva shape.
+ * Attach UI control listeners to shape configuration inputs so changes update the
+ * currently selected Konva shape.
  *
- * Binds change events for position (x, y), dimensions (width, height, radius), shape-specific properties
- * (sides, innerRadius, outerRadius, vertices), stroke width, and fill/stroke color controls. Enabling or
- * disabling fill will toggle the shape's fillEnabled state and apply the fill color when enabled. Circle
+ * Binds change events for position (x, y), dimensions (width, height, radius),
+ * shape-specific properties (sides, innerRadius, outerRadius, vertices),
+ * stroke width, and fill/stroke color controls. Enabling or disabling fill will
+ * toggle the shape's fillEnabled state and apply the fill color when enabled. Circle
  * width/height inputs map to the circle's radius and stay synchronized.
  *
  * @param refs - A collection of DOM input elements and color pickers for shape configuration controls

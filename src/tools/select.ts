@@ -32,9 +32,11 @@ export function startSelection(stage: Konva.Stage) {
 }
 
 /**
- * Updates the visible selection rectangle to span from the initial pointer position to the current pointer position.
+ * Updates the visible selection rectangle to span from the initial pointer
+ * position to the current pointer position.
  *
- * @param stage - Konva stage used to read the current pointer position for sizing and positioning the selection rectangle
+ * @param stage - Konva stage used to read the current pointer position for
+ * sizing and positioning the selection rectangle
  */
 export function moveSelection(stage: Konva.Stage) {
     x2 = stage.getPointerPosition()?.x ?? 0;
@@ -49,9 +51,13 @@ export function moveSelection(stage: Konva.Stage) {
 }
 
 /**
- * Finalizes the current rectangular selection: finds shapes that intersect the selection rectangle, sets those shapes as the transformer's nodes, and when exactly one shape is selected updates and shows the shape configuration UI for that shape.
+ * Finalizes the current rectangular selection: finds shapes that intersect
+ * the selection rectangle, sets those shapes as the transformer's nodes, and
+ * when exactly one shape is selected updates and shows the shape configuration
+ * UI for that shape.
  *
- * @param stage - The Konva stage used to locate shapes to test against the selection rectangle
+ * @param stage - The Konva stage used to locate shapes to test against the
+ * selection rectangle
  */
 export function endSelection(stage: Konva.Stage) {
     const shapeConfigMenu = document.getElementById("shape-config-menu");
@@ -76,7 +82,8 @@ export function endSelection(stage: Konva.Stage) {
 /**
  * Clears the current selection and hides the shape configuration menu.
  *
- * Removes all nodes from the transformer, deletes effect entry elements associated with the shape-config-menu, and hides the menu if it exists.
+ * Removes all nodes from the transformer, deletes effect entry elements
+ * associated with the shape-config-menu, and hides the menu if it exists.
  */
 export function deselect() {
     const shapeConfigMenu = document.getElementById("shape-config-menu");

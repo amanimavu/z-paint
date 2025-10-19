@@ -1,7 +1,11 @@
 /**
- * Renders the hidden shape configuration panel with controls for editing position, dimensions, stroke, fill, and effects.
+ * Renders the hidden shape configuration panel with controls for editing
+ * position, dimensions, stroke, fill, and effects.
  *
- * The panel is rendered as a section element containing grouped inputs and controls for x/y position, width/height/radius/sides/vertices/inner-radius, stroke color and width, fill preview and toggle, and an effects add button. The panel is hidden by default.
+ * The panel is rendered as a section element containing grouped inputs and
+ * controls for x/y position, width/height/radius/sides/vertices/inner-radius,
+ * stroke color and width, fill preview and toggle, and an effects add button.
+ * The panel is hidden by default.
  *
  * @returns The JSX element representing the shape configuration panel.
  */
