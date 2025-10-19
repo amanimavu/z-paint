@@ -238,7 +238,7 @@ export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
         shapeConfigRefs.stroke.color = strokeColorPicker;
     }
 
-    if (shapeConfigRefs && targets?.includes("stroke")) {
+    if (shapeConfigRefs && targets?.includes("fill")) {
         const fillColorPicker = pickerInit(
             "#fill > div",
             shape.fill() as string
