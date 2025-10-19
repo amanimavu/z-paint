@@ -16,8 +16,8 @@ type createProps = {
 export function create({ layer, sides, radius, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
     const polygon = new Konva.RegularPolygon({
-        radius: radius ?? 100,
-        sides: sides ?? 4,
+        radius: Math.max(1, radius ?? 100),
+        sides: Math.max(3, sides ?? 4),
         x: x ?? (store.stage?.width() ?? 0) / 2,
         y: y ?? (store.stage?.height() ?? 0) / 2,
         stroke: "#ffffff",
@@ -29,8 +29,7 @@ export function create({ layer, sides, radius, x, y }: createProps) {
             return getStageBound(pos.x, pos.y);
         },
     });
-    console.log(polygon.getClassName());
-
+    // no-op
     layer.add(polygon);
     store.selectionRectangle && layer.add(store.selectionRectangle);
     store.transformer && layer.add(store.transformer);

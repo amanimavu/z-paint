@@ -68,7 +68,7 @@ export function PropertyPanel() {
                             id="sides"
                             type="number"
                             class="w-full"
-                            min={0}
+                            min={3}
                         />
                     </label>
                     <label class="input input-sm w-3/9 my-1 py-1">
@@ -78,7 +78,7 @@ export function PropertyPanel() {
                             id="vertices"
                             type="number"
                             class="w-full"
-                            min={0}
+                            min={2}
                         />
                     </label>
                     <label class="input input-sm w-3/9 my-1 py-1">

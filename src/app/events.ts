@@ -166,9 +166,11 @@ export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     });
 
     refs?.y?.addEventListener("change", function () {
-        store.selectedShape?.y(parseInt(this.value));
+    refs?.x?.addEventListener("change", function () {
+        if (store.selectedShape) {
+            store.selectedShape.x(parseInt(this.value));
+        }
     });
-
     refs?.sides?.addEventListener("change", function () {
         const n = (this as HTMLInputElement).valueAsNumber;
         if (
