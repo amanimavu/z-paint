@@ -28,4 +28,8 @@ export type ShapeConfigRefs<T extends Element = HTMLInputElement> = {
         color: Pickr | null;
         exists: T | null;
     };
+    radius: T | null;
+    sides: T | null;
+    innerRadius: T | null;
+    vertices: T | null;
 } | null;

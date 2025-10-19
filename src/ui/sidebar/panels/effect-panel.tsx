@@ -2,6 +2,27 @@ import { store, storeObserver } from "@/store/index";
 import { pickerInit } from "@/ui/color-picker";
 
 type Props = { id: string };
+/**
+ * Render an EffectEntry UI block that provides controls to add and edit
+ * shadow or opacity effects for the selected shape.
+ *
+ * The rendered element contains controls (effect selector, shadow controls,
+ * opacity slider, color picker, remove button) that update and read from the
+ * central store's `selectedShape`. Interactions may:
+ * - enable/disable shadow and update shadow properties
+ * (opacity, blur, offsetX, offsetY, color) on `store.selectedShape`
+ * - initialize and assign a color picker to `store.selectedShape` and
+ * call `storeObserver.notify()`
+ * - update the shape's `opacity`
+ * - remove the entry from the DOM and reset any active effect state
+ * on `store.selectedShape` (e.g., disable shadow or reset opacity)
+ * - re-enable the global "add-effect" button when the entry is removed
+ *
+ * @param id - The id attribute for the top-level container element
+ * (used for scoped DOM queries and color picker initialization)
+ * @returns The top-level DOM element for the effect entry configured
+ * with event handlers and controls
+ */
 export function EffectEntry({ id }: Props): Element {
     return (
         <div id={id}>
@@ -16,9 +37,8 @@ export function EffectEntry({ id }: Props): Element {
                         [...shadowConfigs].forEach((input) => {
                             switch (effect) {
                                 case "shadow":
-                                    if (store.selectedShape) {
-                                        store.selectedShape.shadowEnabled(true);
-                                    }
+                                    store.selectedShape?.shadowEnabled(true);
+
                                     input.classList.contains("shadow")
                                         ? input.classList.remove("hidden")
                                         : input.classList.add("hidden");
@@ -27,15 +47,21 @@ export function EffectEntry({ id }: Props): Element {
                                             ".color-picker > div"
                                         )?.parentNode
                                     ) {
-                                        const picker = pickerInit(
-                                            `#${id} .color-picker > div`
-                                        );
                                         if (store.selectedShape) {
                                             const shadowColor =
                                                 store.selectedShape.shadowColor() ??
                                                 "black";
-                                            console.log(shadowColor);
-                                            store.selectedShape.picker = picker;
+                                            //if there is no picker existing
+                                            if (!store.selectedShape.picker) {
+                                                const picker = pickerInit(
+                                                    `#${id} .color-picker > div`
+                                                );
+                                                store.selectedShape.picker =
+                                                    picker;
+                                            }
+                                            store.selectedShape.shadowColor(
+                                                shadowColor
+                                            );
                                             store.selectedShape?.picker?.setColor(
                                                 shadowColor
                                             );

@@ -12,7 +12,6 @@ import {
 } from "tools/select";
 import { store } from "@/store/index";
 import { EffectEntry } from "@/ui/sidebar/panels/effect-panel";
-import { pickerInit } from "@/ui/color-picker";
 import {
     initializeShapeConfigRefs,
     shapeConfigRefs,
@@ -24,6 +23,9 @@ import {
     transformProvider,
 } from "@/app/providers";
 import type Pickr from "@simonwep/pickr";
+import type { Circle } from "konva/lib/shapes/Circle";
+import type { RegularPolygon } from "konva/lib/shapes/RegularPolygon";
+import type { Star } from "konva/lib/shapes/Star";
 
 document.addEventListener("load", function () {
     const shapeBtn = document.getElementById("shapes");
@@ -55,6 +57,18 @@ window.addEventListener("keydown", function (e) {
     }
 });
 
+/**
+ * Attach interactive selection and click handlers to a Konva stage.
+ *
+ * Binds pointer and mouse events to start, update, and finalize a rectangular
+ * selection, and handles click/tap selection semantics for shapes
+ * (single select, multi-select with Shift/Ctrl/Meta, and deselect on empty-stage clicks).
+ *
+ * When a single shape is selected it updates the selected shape in the central
+ * store, reveals the shape configuration menu, and updates the shape configuration UI.
+ *
+ * @param stage - The Konva Stage instance to bind events to
+ */
 export function bindStageEvents(stage: Konva.Stage) {
     stage.on("mousedown touchstart", (e) => {
         // do nothing if we mousedown on any shape
@@ -126,23 +140,7 @@ export function bindStageEvents(stage: Konva.Stage) {
                 const callback = () => {
                     store.selectedShape = e.target as Shape;
                     if (shapeConfigMenu) {
-                        shapeConfigMenu.classList.replace(
-                            "invisible",
-                            "visible"
-                        );
-                    }
-                    const strokeColorPicker = pickerInit(
-                        "#stroke-color > div",
-                        store.selectedShape.stroke() as string
-                    );
-                    const fillColorPicker = pickerInit(
-                        "#fill > div",
-                        store.selectedShape.fill() as string
-                    );
-                    if (shapeConfigRefs) {
-                        shapeConfigRefs.stroke.color = strokeColorPicker;
-                        shapeConfigRefs.fill.color = fillColorPicker;
-                        bindShapeConfigRefs(shapeConfigRefs);
+                        shapeConfigMenu.classList.replace("hidden", "block");
                     }
                     updateShapeConfigUI(e.target as Shape);
                 };
@@ -159,6 +157,36 @@ export function bindStageEvents(stage: Konva.Stage) {
     );
 }
 
+/**
+ * Attach a handler that updates the shape configuration UI while the shape is dragged.
+ *
+ * @param shape - The Konva shape whose `x` and `y` fields in the shape configuration UI
+ * should be refreshed during drag movements
+ */
+export function bindToDragEvents(shape: Shape) {
+    let ticking = false;
+    shape.on("dragmove", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            updateShapeConfigUI(shape, ["x", "y"]);
+            ticking = false;
+        });
+    });
+}
+
+/**
+ * Attach UI control listeners to shape configuration inputs so changes update the
+ * currently selected Konva shape.
+ *
+ * Binds change events for position (x, y), dimensions (width, height, radius),
+ * shape-specific properties (sides, innerRadius, outerRadius, vertices),
+ * stroke width, and fill/stroke color controls. Enabling or disabling fill will
+ * toggle the shape's fillEnabled state and apply the fill color when enabled. Circle
+ * width/height inputs map to the circle's radius and stay synchronized.
+ *
+ * @param refs - A collection of DOM input elements and color pickers for shape configuration controls
+ */
 export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     refs?.x?.addEventListener("change", function () {
         if (store.selectedShape) {
@@ -168,72 +196,124 @@ export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     });
 
     refs?.y?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.y(parseInt(this.value));
-        }
-    });
-
-    refs?.width?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.width(parseInt(this.value));
-        }
-        if (store.selectedShape?.getClassName().toLowerCase() === "circle") {
-            const height = store.selectedShape.height().toString();
-            if (refs?.height) {
-                refs.height.value = height;
-            }
-        }
-    });
-
-    refs?.height?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.height(parseInt(this.value));
-        }
-        if (store.selectedShape?.getClassName().toLowerCase() === "circle") {
-            const width = store.selectedShape.width().toString();
-            if (refs?.width) {
-                refs.width.value = width;
-            }
-        }
-    });
-    refs?.stroke.width?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.strokeWidth(parseInt(this.value));
-        }
-    });
-
-    refs?.fill?.exists?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            store.selectedShape.fill(
-                this.checked
-                    ? refs?.fill.color?.getColor().toRGBA().toString()
-                    : undefined
-            );
-        }
-
-        document
-            .querySelector(`label[for='${this.id}'] i`)
-            ?.classList.toggle("bi-plus");
-        document
-            .querySelector(`label[for='${this.id}'] i`)
-            ?.classList.toggle("bi-dash");
-    });
-
-    if (refs?.stroke.color) {
-        refs.stroke.color?.on("save", function (color: Pickr.HSVaColor) {
+        refs?.x?.addEventListener("change", function () {
             if (store.selectedShape) {
-                store.selectedShape.stroke(color.toRGBA().toString());
+                store.selectedShape.x(parseInt(this.value));
             }
         });
-    }
+        refs?.sides?.addEventListener("change", function () {
+            const n = (this as HTMLInputElement).valueAsNumber;
+            if (
+                Number.isFinite(n) &&
+                store.selectedShape?.getClassName() === "RegularPolygon"
+            ) {
+                (store.selectedShape as RegularPolygon).sides(n);
+            }
+        });
 
-    if (refs?.fill) {
-        refs?.fill?.color?.on("save", function (color: Pickr.HSVaColor) {
-            if (store.selectedShape && refs.fill.exists?.checked) {
-                store.selectedShape.fill(color.toRGBA().toString());
+        refs?.radius?.addEventListener("change", function () {
+            const r = (this as HTMLInputElement).valueAsNumber;
+            if (!Number.isFinite(r)) return;
+            if (store.selectedShape?.getClassName() === "RegularPolygon") {
+                (store.selectedShape as RegularPolygon).radius(r);
+            }
+            if (store.selectedShape?.getClassName() === "Star") {
+                (store.selectedShape as Star).outerRadius(r);
             }
         });
-    }
+
+        refs?.innerRadius?.addEventListener("change", function () {
+            const r = (this as HTMLInputElement).valueAsNumber;
+            if (
+                Number.isFinite(r) &&
+                store.selectedShape?.getClassName() === "Star"
+            ) {
+                (store.selectedShape as Star).innerRadius(r);
+            }
+        });
+
+        refs?.vertices?.addEventListener("change", function () {
+            const n = (this as HTMLInputElement).valueAsNumber;
+            if (
+                Number.isFinite(n) &&
+                store.selectedShape?.getClassName() === "Star"
+            ) {
+                (store.selectedShape as Star).numPoints(n);
+            }
+        });
+        refs?.width?.addEventListener("change", function () {
+            if (store.selectedShape?.getClassName() === "Circle") {
+                const v = (this as HTMLInputElement).valueAsNumber;
+                if (!Number.isFinite(v)) return;
+                // Confirm: is width intended to represent radius (not diameter)?
+                (store.selectedShape as Circle).radius(v / 2);
+                if (refs?.height) {
+                    refs.height.value = `${v}`;
+                }
+            } else {
+                const v = (this as HTMLInputElement).valueAsNumber;
+                if (Number.isFinite(v) && store.selectedShape) {
+                    store.selectedShape.width(v);
+                }
+            }
+        });
+
+        refs?.height?.addEventListener("change", function () {
+            if (store.selectedShape?.getClassName() === "Circle") {
+                const v = (this as HTMLInputElement).valueAsNumber;
+                if (!Number.isFinite(v)) return;
+                (store.selectedShape as Circle).radius(v / 2);
+                if (refs?.width) {
+                    refs.width.value = `${v}`;
+                }
+            } else {
+                const v = (this as HTMLInputElement).valueAsNumber;
+                if (Number.isFinite(v) && store.selectedShape) {
+                    store.selectedShape.height(v);
+                }
+            }
+        });
+        refs?.stroke.width?.addEventListener("change", function () {
+            if (store.selectedShape) {
+                store.selectedShape.strokeWidth(parseInt(this.value));
+            }
+        });
+
+        refs?.fill?.exists?.addEventListener("change", function () {
+            if (store.selectedShape) {
+                if (this.checked) {
+                    store.selectedShape.fillEnabled(true);
+                    const c = refs?.fill.color?.getColor();
+                    c && store.selectedShape.fill(c.toRGBA().toString());
+                } else {
+                    store.selectedShape.fillEnabled(false);
+                }
+            }
+
+            document
+                .querySelector(`label[for='${this.id}'] i`)
+                ?.classList.toggle("bi-plus");
+            document
+                .querySelector(`label[for='${this.id}'] i`)
+                ?.classList.toggle("bi-dash");
+        });
+
+        if (refs?.stroke.color) {
+            refs.stroke.color?.on("save", function (color: Pickr.HSVaColor) {
+                if (store.selectedShape) {
+                    store.selectedShape.stroke(color.toRGBA().toString());
+                }
+            });
+        }
+
+        if (refs?.fill) {
+            refs?.fill?.color?.on("save", function (color: Pickr.HSVaColor) {
+                if (store.selectedShape && refs.fill.exists?.checked) {
+                    store.selectedShape.fill(color.toRGBA().toString());
+                }
+            });
+        }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

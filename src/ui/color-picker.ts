@@ -2,7 +2,7 @@ import "@simonwep/pickr/dist/themes/monolith.min.css"; // 'monolith' theme
 
 import Pickr from "@simonwep/pickr";
 import { Observer } from "../lib/state-management";
-import { store } from "@/store/index";
+import { store, storeObserver } from "@/store/index";
 
 export const pickerInit = (querySelector?: string, defaultColor?: string) => {
     return Pickr.create({
@@ -29,8 +29,6 @@ export const pickerInit = (querySelector?: string, defaultColor?: string) => {
         },
     });
 };
-
-export const storeObserver = new Observer<typeof store>(store);
 
 const pickerProvided = (state: typeof store) => {
     if (state.selectedShape?.picker) {

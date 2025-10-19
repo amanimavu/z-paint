@@ -1,6 +1,17 @@
+/**
+ * Renders the hidden shape configuration panel with controls for editing
+ * position, dimensions, stroke, fill, and effects.
+ *
+ * The panel is rendered as a section element containing grouped inputs and
+ * controls for x/y position, width/height/radius/sides/vertices/inner-radius,
+ * stroke color and width, fill preview and toggle, and an effects add button.
+ * The panel is hidden by default.
+ *
+ * @returns The JSX element representing the shape configuration panel.
+ */
 export function PropertyPanel() {
     return (
-        <section id="shape-config-menu" class="mt-6 invisible">
+        <section id="shape-config-menu" class="mt-6 hidden">
             <div class="divider my-0"></div>
             <div>
                 <h5 class="font-normal">positions</h5>
@@ -30,8 +41,8 @@ export function PropertyPanel() {
             <div class="divider my-0"></div>
             <div>
                 <h5 class="font-normal">dimensions</h5>
-                <div class="flex justify-between gap-10">
-                    <label class="input input-sm validator w-3/9 my-1 py-1">
+                <div class="flex justify-between gap-x-10 gap-y-2 flex-wrap">
+                    <label class="input input-sm w-3/9 my-1 py-1">
                         <span class="font-bold opacity-40 mr-2">w</span>
                         <input
                             name="width"
@@ -46,6 +57,46 @@ export function PropertyPanel() {
                         <input
                             name="height"
                             id="height"
+                            type="number"
+                            class="w-full"
+                            min={0}
+                        />
+                    </label>
+                    <label class="input input-sm w-3/9 my-1 py-1">
+                        <span class="font-bold opacity-40 mr-2">r</span>
+                        <input
+                            name="radius"
+                            id="radius"
+                            type="number"
+                            class="w-full"
+                            min={0}
+                        />
+                    </label>
+                    <label class="input input-sm w-3/9 my-1 py-1">
+                        <span class="font-bold opacity-40 mr-2">s</span>
+                        <input
+                            name="sides"
+                            id="sides"
+                            type="number"
+                            class="w-full"
+                            min={3}
+                        />
+                    </label>
+                    <label class="input input-sm w-3/9 my-1 py-1">
+                        <span class="font-bold opacity-40 mr-2">v</span>
+                        <input
+                            name="vertices"
+                            id="vertices"
+                            type="number"
+                            class="w-full"
+                            min={2}
+                        />
+                    </label>
+                    <label class="input input-sm w-3/9 my-1 py-1">
+                        <span class="font-bold opacity-40 mr-2">ir</span>
+                        <input
+                            name="inner-radius"
+                            id="inner-radius"
                             type="number"
                             class="w-full"
                             min={0}

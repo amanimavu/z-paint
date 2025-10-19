@@ -3,19 +3,31 @@ import type { Layer } from "konva/lib/Layer";
 import { store } from "@/store/index";
 import { updateShapeConfigUI } from "@/ui/toolbar/tools/shape";
 import { getStageBound } from "@/lib/stage";
+import { bindToDragEvents } from "@/app/events";
 
 type createProps = {
     layer?: Layer;
-    width?: number;
-    height?: number;
+    radius?: number;
     x?: number;
     y?: number;
 };
-export function create({ layer, width, height, x, y }: createProps) {
+/**
+ * Create a draggable Konva circle, add it to a layer
+ * (and attach selection/transformer if present), and return that layer.
+ *
+ * @param layer - An existing Konva Layer to add the circle to;
+ * a new Layer is created if omitted
+ * @param radius - Circle radius; defaults to 100
+ * @param x - X coordinate for the circle's center; defaults to the
+ * stage's horizontal center (or 0)
+ * @param y - Y coordinate for the circle's center; defaults to the
+ * stage's vertical center (or 0)
+ * @returns The Konva Layer instance containing the created circle
+ */
+export function create({ layer, radius, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
     const circle = new Konva.Circle({
-        width: width ?? 100,
-        height: height ?? 100,
+        radius: radius ?? 100,
         x: x ?? (store.stage?.width() ?? 0) / 2,
         y: y ?? (store.stage?.height() ?? 0) / 2,
         stroke: "#ffffff",
@@ -31,9 +43,10 @@ export function create({ layer, width, height, x, y }: createProps) {
     layer.add(circle);
     store.selectionRectangle && layer.add(store.selectionRectangle);
     store.transformer && layer.add(store.transformer);
+    bindToDragEvents(circle);
 
     circle.on("transform", function () {
-        updateShapeConfigUI(this);
+        updateShapeConfigUI(this, ["height", "width", "radius"]);
     });
     return layer;
 }

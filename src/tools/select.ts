@@ -31,6 +31,13 @@ export function startSelection(stage: Konva.Stage) {
     });
 }
 
+/**
+ * Updates the visible selection rectangle to span from the initial pointer
+ * position to the current pointer position.
+ *
+ * @param stage - Konva stage used to read the current pointer position for
+ * sizing and positioning the selection rectangle
+ */
 export function moveSelection(stage: Konva.Stage) {
     x2 = stage.getPointerPosition()?.x ?? 0;
     y2 = stage.getPointerPosition()?.y ?? 0;
@@ -43,8 +50,17 @@ export function moveSelection(stage: Konva.Stage) {
     });
 }
 
+/**
+ * Finalizes the current rectangular selection: finds shapes that intersect
+ * the selection rectangle, sets those shapes as the transformer's nodes, and
+ * when exactly one shape is selected updates and shows the shape configuration
+ * UI for that shape.
+ *
+ * @param stage - The Konva stage used to locate shapes to test against the
+ * selection rectangle
+ */
 export function endSelection(stage: Konva.Stage) {
-    const shapeConfigMenu = document.getElementById("shape-configs");
+    const shapeConfigMenu = document.getElementById("shape-config-menu");
     const shapes = stage.find(".shape");
     const box = store.selectionRectangle?.getClientRect();
     const selected = shapes.filter((shape) => {
@@ -58,15 +74,20 @@ export function endSelection(stage: Konva.Stage) {
     if (selected.length === 1) {
         updateShapeConfigUI(selected[0] as Shape);
         if (shapeConfigMenu) {
-            shapeConfigMenu.classList.replace("invisible", "visible");
+            shapeConfigMenu.classList.replace("hidden", "block");
         }
     }
 }
 
+/**
+ * Clears the current selection and hides the shape configuration menu.
+ *
+ * Removes all nodes from the transformer, deletes effect entry elements
+ * associated with the shape-config-menu, and hides the menu if it exists.
+ */
 export function deselect() {
     const shapeConfigMenu = document.getElementById("shape-config-menu");
     store.transformer?.nodes([]);
-    console.log(shapeConfigMenu);
 
     if (shapeConfigMenu) {
         const effectEntries = document.querySelectorAll(
@@ -75,7 +96,7 @@ export function deselect() {
         effectEntries.forEach((entry) => {
             entry.remove();
         });
-        shapeConfigMenu.classList.replace("visible", "invisible");
+        shapeConfigMenu.classList.replace("block", "hidden");
     }
 }
 
