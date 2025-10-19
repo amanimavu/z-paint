@@ -198,7 +198,6 @@ export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
                             queryFactory("shadow-opacity")
                         );
                     if (shadowOpacityInput) {
-                        console.log(shadowOpacity);
                         shadowOpacityInput.value = shadowOpacity;
                     }
 

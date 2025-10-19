@@ -33,7 +33,7 @@ export function create({ layer, radius, x, y }: createProps) {
     bindToDragEvents(circle);
 
     circle.on("transform", function () {
-        updateShapeConfigUI(this, ["height", "width"]);
+        updateShapeConfigUI(this, ["height", "width", "radius"]);
     });
     return layer;
 }

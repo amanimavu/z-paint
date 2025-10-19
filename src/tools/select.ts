@@ -55,7 +55,6 @@ export function endSelection(stage: Konva.Stage) {
     });
 
     store.transformer?.nodes(selected);
-    console.log(selected);
     if (selected.length === 1) {
         updateShapeConfigUI(selected[0] as Shape);
         if (shapeConfigMenu) {

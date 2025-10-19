@@ -23,10 +23,13 @@ export function create({
     y,
 }: createProps) {
     layer = layer ?? new Konva.Layer();
+    const outer = Math.max(1, radius ?? 100);
+    const inner = Math.max(0, Math.min(innerRadius ?? 50, outer - 1));
+    const points = Math.max(2, vertices ?? 5);
     const star = new Konva.Star({
-        outerRadius: radius ?? 100,
-        innerRadius: innerRadius ?? 50,
-        numPoints: vertices ?? 5,
+        outerRadius: outer,
+        innerRadius: inner,
+        numPoints: points,
         x: x ?? (store.stage?.width() ?? 0) / 2,
         y: y ?? (store.stage?.height() ?? 0) / 2,
         stroke: "#ffffff",

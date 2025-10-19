@@ -16,9 +16,8 @@ export function EffectEntry({ id }: Props): Element {
                         [...shadowConfigs].forEach((input) => {
                             switch (effect) {
                                 case "shadow":
-                                    if (store.selectedShape) {
-                                        store.selectedShape.shadowEnabled(true);
-                                    }
+                                    store.selectedShape?.shadowEnabled(true);
+
                                     input.classList.contains("shadow")
                                         ? input.classList.remove("hidden")
                                         : input.classList.add("hidden");
@@ -27,14 +26,18 @@ export function EffectEntry({ id }: Props): Element {
                                             ".color-picker > div"
                                         )?.parentNode
                                     ) {
-                                        const picker = pickerInit(
-                                            `#${id} .color-picker > div`
-                                        );
                                         if (store.selectedShape) {
                                             const shadowColor =
                                                 store.selectedShape.shadowColor() ??
                                                 "black";
-                                            store.selectedShape.picker = picker;
+                                            //if there is no picker existing
+                                            if (!store.selectedShape.picker) {
+                                                const picker = pickerInit(
+                                                    `#${id} .color-picker > div`
+                                                );
+                                                store.selectedShape.picker =
+                                                    picker;
+                                            }
                                             store.selectedShape.shadowColor(
                                                 shadowColor
                                             );
