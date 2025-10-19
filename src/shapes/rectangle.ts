@@ -12,6 +12,16 @@ type createProps = {
     x?: number;
     y?: number;
 };
+/**
+ * Create and add a draggable rectangle shape to a Konva layer.
+ *
+ * @param layer - Optional existing Konva layer to add the rectangle to; a new layer is created if omitted.
+ * @param width - Rectangle width; defaults to 200.
+ * @param height - Rectangle height; defaults to 100.
+ * @param x - Rectangle x position; defaults to the horizontal center of the current stage.
+ * @param y - Rectangle y position; defaults to the vertical center of the current stage.
+ * @returns The Konva.Layer containing the created rectangle (and any existing selection rectangle or transformer added to the layer).
+ */
 export function create({ layer, width, height, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
     const rectangle = new Konva.Rect({

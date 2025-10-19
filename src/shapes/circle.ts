@@ -11,6 +11,15 @@ type createProps = {
     x?: number;
     y?: number;
 };
+/**
+ * Create a draggable Konva circle, add it to a layer (and attach selection/transformer if present), and return that layer.
+ *
+ * @param layer - An existing Konva Layer to add the circle to; a new Layer is created if omitted
+ * @param radius - Circle radius; defaults to 100
+ * @param x - X coordinate for the circle's center; defaults to the stage's horizontal center (or 0)
+ * @param y - Y coordinate for the circle's center; defaults to the stage's vertical center (or 0)
+ * @returns The Konva Layer instance containing the created circle
+ */
 export function create({ layer, radius, x, y }: createProps) {
     layer = layer ?? new Konva.Layer();
     const circle = new Konva.Circle({

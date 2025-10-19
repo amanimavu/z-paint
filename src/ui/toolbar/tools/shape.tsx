@@ -11,6 +11,11 @@ import { bindShapeConfigRefs } from "@/app/events";
 
 export let shapeConfigRefs: ShapeConfigRefs = null;
 
+/**
+ * Initialize and cache references to shape configuration controls found under the DOM element with id "shape-configs".
+ *
+ * @returns The populated `ShapeConfigRefs` object containing references to inputs (or `null` if the "shape-configs" element is not present)
+ */
 export function initializeShapeConfigRefs() {
     const shapeConfigMenu = document.getElementById("shape-configs");
     if (shapeConfigMenu) {
@@ -47,6 +52,14 @@ type targetOptions =
     | "radius"
     | "innerRadius"
     | "vertices";
+/**
+ * Populate the shape configuration UI controls with values taken from a given Shape.
+ *
+ * Updates only the configuration fields listed in `targets`; when `targets` is omitted, updates position, size, stroke, fill, radius, sides, innerRadius, and vertices. This will also initialize stroke and fill color pickers when those targets are included.
+ *
+ * @param shape - The Konva `Shape` whose attributes are read to populate the UI controls
+ * @param targets - Optional list of specific configuration fields to update (allowed values: `"x"`, `"y"`, `"width"`, `"height"`, `"stroke"`, `"fill"`, `"sides"`, `"radius"`, `"innerRadius"`, `"vertices"`). If omitted, a comprehensive default set is used.
+ */
 export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
     targets = targets ?? [
         "x",
@@ -250,6 +263,11 @@ export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
     bindShapeConfigRefs(shapeConfigRefs);
 }
 
+/**
+ * Render the Shapes tool UI with buttons to create common shapes and an embedded PropertyPanel.
+ *
+ * @returns A JSX element containing shape creation buttons (circle, rectangle, pentagon, pen tool placeholder, star) and the PropertyPanel.
+ */
 export function ShapeTools() {
     return (
         <div id="shape-configs" class="flex-col mb-4 flex">

@@ -14,6 +14,17 @@ type createProps = {
     innerRadius?: number;
 };
 
+/**
+ * Create and add a Konva star shape to a layer configured with radii, point count, and position.
+ *
+ * @param layer - Optional layer to add the star into; if omitted a new layer is created
+ * @param vertices - Number of star points
+ * @param radius - Outer radius of the star
+ * @param innerRadius - Inner radius of the star
+ * @param x - X coordinate for the star's position; defaults to stage center if not provided
+ * @param y - Y coordinate for the star's position; defaults to stage center if not provided
+ * @returns The Konva.Layer containing the created star (the provided layer or a newly created one)
+ */
 export function create({
     layer,
     vertices,
