@@ -47,7 +47,6 @@ export function create({ layer, sides, radius, x, y }: createProps) {
             return getStageBound(pos.x, pos.y);
         },
     });
-    // no-op
     layer.add(polygon);
     store.selectionRectangle && layer.add(store.selectionRectangle);
     store.transformer && layer.add(store.transformer);

@@ -17,6 +17,11 @@ export function deleteShape() {
     const shapeConfigMenu = document.getElementById("shape-config-menu");
 
     shapeConfigMenu?.classList.replace("block", "hidden");
+    shapeConfigMenu
+        ?.querySelectorAll("#dimensions label")
+        .forEach((element) => {
+            element.classList.replace("block", "hidden");
+        });
 }
 
 /**

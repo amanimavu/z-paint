@@ -83,10 +83,16 @@ export function endSelection(stage: Konva.Stage) {
  * Clears the current selection and hides the shape configuration menu.
  *
  * Removes all nodes from the transformer, deletes effect entry elements
- * associated with the shape-config-menu, and hides the menu if it exists.
+ * associated with the shape-config-menu, hides all dimension inputs, and hides the menu if it exists.
  */
 export function deselect() {
     const shapeConfigMenu = document.getElementById("shape-config-menu");
+    shapeConfigMenu
+        ?.querySelectorAll("#dimensions label")
+        .forEach((element) => {
+            element.classList.replace("block", "hidden");
+        });
+
     store.transformer?.nodes([]);
 
     if (shapeConfigMenu) {

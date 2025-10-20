@@ -122,36 +122,64 @@ export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
         attributes.numPoints ?? null,
     ];
 
+    const shapeName = shape.getClassName();
+    const canUpdateWidth =
+        targets?.includes("width") && ["Circle", "Rect"].includes(shapeName);
+    const canUpdateHeight =
+        targets?.includes("height") && ["Circle", "Rect"].includes(shapeName);
+    const canUpdateSides = targets?.includes("sides") && sides;
+    const canUpdateRadius =
+        targets.includes("radius") &&
+        ["Star", "RegularPolygon"].includes(shapeName);
+    const canUpdateInnerRadius = targets.includes("innerRadius") && innerRadius;
+    const canUpdateVertices = targets.includes("vertices") && vertices;
+
     if (shapeConfigRefs?.x && targets?.includes("x") && x) {
         shapeConfigRefs.x.value = `${parseInt(x)}`;
     }
     if (shapeConfigRefs?.y && targets?.includes("y") && y) {
         shapeConfigRefs.y.value = `${parseInt(y)}`;
     }
-    if (shapeConfigRefs?.width && targets?.includes("width")) {
+    if (shapeConfigRefs?.width && canUpdateWidth) {
+        shapeConfigRefs.width.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         if (radius) {
-            shapeConfigRefs.width.value = `${parseInt(`${radius * scaleX}`)}`;
+            shapeConfigRefs.width.value = `${
+                parseInt(`${radius * scaleX}`) * 2
+            }`;
         } else {
             shapeConfigRefs.width.value = `${parseInt(`${width * scaleX}`)}`;
         }
     }
-    if (shapeConfigRefs?.height && targets?.includes("height")) {
+    if (shapeConfigRefs?.height && canUpdateHeight) {
+        shapeConfigRefs.height.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         if (radius) {
-            shapeConfigRefs.height.value = `${parseInt(`${radius * scaleY}`)}`;
+            shapeConfigRefs.height.value = `${
+                parseInt(`${radius * scaleY}`) * 2
+            }`;
         } else {
             shapeConfigRefs.height.value = `${parseInt(`${height * scaleY}`)}`;
         }
     }
 
-    if (shapeConfigRefs?.sides && targets.includes("sides") && sides) {
+    if (shapeConfigRefs?.sides && canUpdateSides) {
+        shapeConfigRefs.sides.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         shapeConfigRefs.sides.value = `${parseInt(`${sides}`)}`;
     }
 
-    if (
-        shapeConfigRefs?.radius &&
-        targets.includes("radius") &&
-        (radius || outerRadius)
-    ) {
+    if (shapeConfigRefs?.radius && canUpdateRadius) {
+        shapeConfigRefs.radius.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         if (outerRadius) {
             shapeConfigRefs.radius.value = `${parseInt(`${outerRadius}`)}`;
         } else {
@@ -159,15 +187,19 @@ export function updateShapeConfigUI(shape: Shape, targets?: targetOptions[]) {
         }
     }
 
-    if (
-        shapeConfigRefs?.innerRadius &&
-        targets.includes("innerRadius") &&
-        innerRadius
-    ) {
+    if (shapeConfigRefs?.innerRadius && canUpdateInnerRadius) {
+        shapeConfigRefs.innerRadius.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         shapeConfigRefs.innerRadius.value = `${parseInt(`${innerRadius}`)}`;
     }
 
-    if (shapeConfigRefs?.vertices && targets.includes("vertices") && vertices) {
+    if (shapeConfigRefs?.vertices && canUpdateVertices) {
+        shapeConfigRefs.vertices.parentElement?.classList.replace(
+            "hidden",
+            "block"
+        );
         shapeConfigRefs.vertices.value = `${parseInt(`${vertices}`)}`;
     }
 

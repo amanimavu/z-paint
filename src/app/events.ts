@@ -189,131 +189,125 @@ export function bindToDragEvents(shape: Shape) {
  */
 export function bindShapeConfigRefs(refs: typeof shapeConfigRefs) {
     refs?.x?.addEventListener("change", function () {
-        if (store.selectedShape) {
-            const offsetLeft = store.selectedShape.width();
-            store.selectedShape.x(parseInt(this.value) + offsetLeft);
-        }
+        store.selectedShape?.x(parseInt(this.value));
     });
 
     refs?.y?.addEventListener("change", function () {
-        refs?.x?.addEventListener("change", function () {
-            if (store.selectedShape) {
-                store.selectedShape.x(parseInt(this.value));
-            }
-        });
-        refs?.sides?.addEventListener("change", function () {
-            const n = (this as HTMLInputElement).valueAsNumber;
-            if (
-                Number.isFinite(n) &&
-                store.selectedShape?.getClassName() === "RegularPolygon"
-            ) {
-                (store.selectedShape as RegularPolygon).sides(n);
-            }
-        });
+        store.selectedShape?.y(parseInt(this.value));
+    });
 
-        refs?.radius?.addEventListener("change", function () {
-            const r = (this as HTMLInputElement).valueAsNumber;
-            if (!Number.isFinite(r)) return;
-            if (store.selectedShape?.getClassName() === "RegularPolygon") {
-                (store.selectedShape as RegularPolygon).radius(r);
-            }
-            if (store.selectedShape?.getClassName() === "Star") {
-                (store.selectedShape as Star).outerRadius(r);
-            }
-        });
-
-        refs?.innerRadius?.addEventListener("change", function () {
-            const r = (this as HTMLInputElement).valueAsNumber;
-            if (
-                Number.isFinite(r) &&
-                store.selectedShape?.getClassName() === "Star"
-            ) {
-                (store.selectedShape as Star).innerRadius(r);
-            }
-        });
-
-        refs?.vertices?.addEventListener("change", function () {
-            const n = (this as HTMLInputElement).valueAsNumber;
-            if (
-                Number.isFinite(n) &&
-                store.selectedShape?.getClassName() === "Star"
-            ) {
-                (store.selectedShape as Star).numPoints(n);
-            }
-        });
-        refs?.width?.addEventListener("change", function () {
-            if (store.selectedShape?.getClassName() === "Circle") {
-                const v = (this as HTMLInputElement).valueAsNumber;
-                if (!Number.isFinite(v)) return;
-                // Confirm: is width intended to represent radius (not diameter)?
-                (store.selectedShape as Circle).radius(v / 2);
-                if (refs?.height) {
-                    refs.height.value = `${v}`;
-                }
-            } else {
-                const v = (this as HTMLInputElement).valueAsNumber;
-                if (Number.isFinite(v) && store.selectedShape) {
-                    store.selectedShape.width(v);
-                }
-            }
-        });
-
-        refs?.height?.addEventListener("change", function () {
-            if (store.selectedShape?.getClassName() === "Circle") {
-                const v = (this as HTMLInputElement).valueAsNumber;
-                if (!Number.isFinite(v)) return;
-                (store.selectedShape as Circle).radius(v / 2);
-                if (refs?.width) {
-                    refs.width.value = `${v}`;
-                }
-            } else {
-                const v = (this as HTMLInputElement).valueAsNumber;
-                if (Number.isFinite(v) && store.selectedShape) {
-                    store.selectedShape.height(v);
-                }
-            }
-        });
-        refs?.stroke.width?.addEventListener("change", function () {
-            if (store.selectedShape) {
-                store.selectedShape.strokeWidth(parseInt(this.value));
-            }
-        });
-
-        refs?.fill?.exists?.addEventListener("change", function () {
-            if (store.selectedShape) {
-                if (this.checked) {
-                    store.selectedShape.fillEnabled(true);
-                    const c = refs?.fill.color?.getColor();
-                    c && store.selectedShape.fill(c.toRGBA().toString());
-                } else {
-                    store.selectedShape.fillEnabled(false);
-                }
-            }
-
-            document
-                .querySelector(`label[for='${this.id}'] i`)
-                ?.classList.toggle("bi-plus");
-            document
-                .querySelector(`label[for='${this.id}'] i`)
-                ?.classList.toggle("bi-dash");
-        });
-
-        if (refs?.stroke.color) {
-            refs.stroke.color?.on("save", function (color: Pickr.HSVaColor) {
-                if (store.selectedShape) {
-                    store.selectedShape.stroke(color.toRGBA().toString());
-                }
-            });
-        }
-
-        if (refs?.fill) {
-            refs?.fill?.color?.on("save", function (color: Pickr.HSVaColor) {
-                if (store.selectedShape && refs.fill.exists?.checked) {
-                    store.selectedShape.fill(color.toRGBA().toString());
-                }
-            });
+    refs?.sides?.addEventListener("change", function () {
+        const n = (this as HTMLInputElement).valueAsNumber;
+        if (
+            Number.isFinite(n) &&
+            store.selectedShape?.getClassName() === "RegularPolygon"
+        ) {
+            (store.selectedShape as RegularPolygon).sides(n);
         }
     });
+
+    refs?.radius?.addEventListener("change", function () {
+        const r = (this as HTMLInputElement).valueAsNumber;
+        if (!Number.isFinite(r)) return;
+        if (store.selectedShape?.getClassName() === "RegularPolygon") {
+            (store.selectedShape as RegularPolygon).radius(r);
+        }
+        if (store.selectedShape?.getClassName() === "Star") {
+            (store.selectedShape as Star).outerRadius(r);
+        }
+    });
+
+    refs?.innerRadius?.addEventListener("change", function () {
+        const innerRadius = (this as HTMLInputElement).valueAsNumber;
+        if (
+            Number.isFinite(innerRadius) &&
+            store.selectedShape?.getClassName() === "Star"
+        ) {
+            (store.selectedShape as Star).innerRadius(innerRadius);
+        }
+    });
+
+    refs?.vertices?.addEventListener("change", function () {
+        const n = (this as HTMLInputElement).valueAsNumber;
+        if (
+            Number.isFinite(n) &&
+            store.selectedShape?.getClassName() === "Star"
+        ) {
+            (store.selectedShape as Star).numPoints(n);
+        }
+    });
+    refs?.width?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "Circle") {
+            const v = (this as HTMLInputElement).valueAsNumber;
+            if (!Number.isFinite(v)) return;
+            // Confirm: is width intended to represent radius (not diameter)?
+            (store.selectedShape as Circle).radius(v / 2);
+            if (refs?.height) {
+                refs.height.value = `${v}`;
+            }
+        } else {
+            const v = (this as HTMLInputElement).valueAsNumber;
+            if (Number.isFinite(v) && store.selectedShape) {
+                store.selectedShape.width(v);
+            }
+        }
+    });
+
+    refs?.height?.addEventListener("change", function () {
+        if (store.selectedShape?.getClassName() === "Circle") {
+            const v = (this as HTMLInputElement).valueAsNumber;
+            if (!Number.isFinite(v)) return;
+            (store.selectedShape as Circle).radius(v / 2);
+            if (refs?.width) {
+                refs.width.value = `${v}`;
+            }
+        } else {
+            const v = (this as HTMLInputElement).valueAsNumber;
+            if (Number.isFinite(v) && store.selectedShape) {
+                store.selectedShape.height(v);
+            }
+        }
+    });
+    refs?.stroke.width?.addEventListener("change", function () {
+        if (store.selectedShape) {
+            store.selectedShape.strokeWidth(parseInt(this.value));
+        }
+    });
+
+    refs?.fill?.exists?.addEventListener("change", function () {
+        if (store.selectedShape) {
+            if (this.checked) {
+                store.selectedShape.fillEnabled(true);
+                const c = refs?.fill.color?.getColor();
+                c && store.selectedShape.fill(c.toRGBA().toString());
+            } else {
+                store.selectedShape.fillEnabled(false);
+            }
+        }
+
+        document
+            .querySelector(`label[for='${this.id}'] i`)
+            ?.classList.toggle("bi-plus");
+        document
+            .querySelector(`label[for='${this.id}'] i`)
+            ?.classList.toggle("bi-dash");
+    });
+
+    if (refs?.stroke.color) {
+        refs.stroke.color?.on("save", function (color: Pickr.HSVaColor) {
+            if (store.selectedShape) {
+                store.selectedShape.stroke(color.toRGBA().toString());
+            }
+        });
+    }
+
+    if (refs?.fill) {
+        refs?.fill?.color?.on("save", function (color: Pickr.HSVaColor) {
+            if (store.selectedShape && refs.fill.exists?.checked) {
+                store.selectedShape.fill(color.toRGBA().toString());
+            }
+        });
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

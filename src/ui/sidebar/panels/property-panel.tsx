@@ -39,10 +39,10 @@ export function PropertyPanel() {
                 </div>
             </div>
             <div class="divider my-0"></div>
-            <div>
+            <div id="dimensions">
                 <h5 class="font-normal">dimensions</h5>
                 <div class="flex justify-between gap-x-10 gap-y-2 flex-wrap">
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class="input input-sm w-3/9 my-1 hidden">
                         <span class="font-bold opacity-40 mr-2">w</span>
                         <input
                             name="width"
@@ -52,7 +52,7 @@ export function PropertyPanel() {
                             min={0}
                         />
                     </label>
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class="input input-sm w-3/9 my-1 hidden">
                         <span class="font-bold opacity-40 mr-2">h</span>
                         <input
                             name="height"
@@ -62,7 +62,7 @@ export function PropertyPanel() {
                             min={0}
                         />
                     </label>
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class="input input-sm w-3/9 my-1 hidden">
                         <span class="font-bold opacity-40 mr-2">r</span>
                         <input
                             name="radius"
@@ -72,7 +72,7 @@ export function PropertyPanel() {
                             min={0}
                         />
                     </label>
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class="input input-sm w-3/9 my-1 hidden">
                         <span class="font-bold opacity-40 mr-2">s</span>
                         <input
                             name="sides"
@@ -82,7 +82,7 @@ export function PropertyPanel() {
                             min={3}
                         />
                     </label>
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class={`input input-sm w-3/9 my-1 hidden`}>
                         <span class="font-bold opacity-40 mr-2">v</span>
                         <input
                             name="vertices"
@@ -92,7 +92,7 @@ export function PropertyPanel() {
                             min={2}
                         />
                     </label>
-                    <label class="input input-sm w-3/9 my-1 py-1">
+                    <label class="input input-sm w-3/9 my-1 hidden">
                         <span class="font-bold opacity-40 mr-2">ir</span>
                         <input
                             name="inner-radius"
